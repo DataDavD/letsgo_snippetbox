@@ -18,11 +18,16 @@ func home(w http.ResponseWriter, r *http.Request) {
 		// return from func to avoid proceeding to home page response
 		return
 	}
-	// Use the template.ParseFiles() function to read the template file into a
-	// template set. If there's an error, we log the detailed error message and use
-	// the http.Error() function to send a generic 500 Internal Server Error
-	// response to the user.
-	ts, err := template.ParseFiles("./ui/html/home.page.html")
+
+	files := []string{
+		"./ui/html/home.page.html",
+		"./ui/html/base.layout.html",
+		"./ui/html/footer.partial.html",
+	}
+	// Use the template.ParseFiles() func to read the files and store the templates
+	// in a template set. Noticed that we can pass teh slice of file paths as a variadic
+	// param?
+	ts, err := template.ParseFiles(files...)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, "Internal Server Error", 500)
