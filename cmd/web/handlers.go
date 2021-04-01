@@ -20,9 +20,9 @@ func home(w http.ResponseWriter, r *http.Request) {
 	}
 
 	files := []string{
-		"./ui/html/home.page.html",
-		"./ui/html/base.layout.html",
-		"./ui/html/footer.partial.html",
+		"./ui/html/home.page.tmpl",
+		"./ui/html/base.layout.tmpl",
+		"./ui/html/footer.partial.tmpl",
 	}
 	// Use the template.ParseFiles() func to read the files and store the templates
 	// in a template set. Noticed that we can pass teh slice of file paths as a variadic
