@@ -9,11 +9,6 @@ import (
 
 func main() {
 	addr := flag.String("addr", ":4000", "HTTP network address")
-	// Importantly, we use the flag.Parse() function to parse the command-line flag.
-	// This reads in the command-line flag value and assigns it to the addr
-	// variable. You need to call this *before* you use the addr variable
-	// otherwise it will always contain the default value of ":4000". If any errors are
-	// encountered during parsing the application will be terminated.”
 	flag.Parse()
 
 	// Additional info flags are joined using the bitwise OR operator |.
@@ -37,12 +32,18 @@ func main() {
 	// "/static" prefix before the request reaches the file server.
 	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
 
-	// The value returned from the flag.String() function is a pointer to the flag
-	// value, not the value itself. So we need to dereference the pointer (i.e.
-	// prefix it with the * symbol) before using it. Note that we're using the
-	// log.Printf() function to interpolate the address with the log message.”
+	// Initialize a new http.Server struct. We set the Addr and Handler fields so
+	// that the server uses the same network address and routes as before, and set
+	// the ErrorLog field so that the server now uses the custom errorLog logger in
+	// the event of any problems.
+	srv := &http.Server{
+		Addr:     *addr,
+		ErrorLog: errorLog,
+		Handler:  mux,
+	}
+
 	infoLog.Printf("Starting server on %s", *addr)
-	if err := http.ListenAndServe(*addr, mux); err != nil {
+	if err := srv.ListenAndServe(); err != nil {
 		errorLog.Fatal(err)
 	}
 }
