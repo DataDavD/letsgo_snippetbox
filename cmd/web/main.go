@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
@@ -14,6 +15,10 @@ func main() {
 	// otherwise it will always contain the default value of ":4000". If any errors are
 	// encountered during parsing the application will be terminated.”
 	flag.Parse()
+
+	// Additional info flags are joined using the bitwise OR operator |.
+	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
 	// Use the http.NewServeMux() func to tinit a new servemux, then
 	// register the home function as the handler for the "/" URL pattern.
@@ -36,8 +41,8 @@ func main() {
 	// value, not the value itself. So we need to dereference the pointer (i.e.
 	// prefix it with the * symbol) before using it. Note that we're using the
 	// log.Printf() function to interpolate the address with the log message.”
-	log.Printf("Starting server on %s", *addr)
+	infoLog.Printf("Starting server on %s", *addr)
 	if err := http.ListenAndServe(*addr, mux); err != nil {
-		log.Fatal(err)
+		errorLog.Fatal(err)
 	}
 }
