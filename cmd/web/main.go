@@ -1,10 +1,14 @@
 package main
 
 import (
+	"database/sql"
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type application struct {
@@ -13,12 +17,30 @@ type application struct {
 }
 
 func main() {
-	addr := flag.String("addr", ":4000", "HTTP network address")
-	flag.Parse()
-
 	// Additional info flags are joined using the bitwise OR operator |.
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+
+	mysqlPw := os.Getenv("SNIPPETBOX_MYSQL_PW")
+	pw := fmt.Sprintf("web:%s@/snippetbox?parseTime=true", mysqlPw)
+
+	addr := flag.String("addr", ":4000", "HTTP network address")
+	dsn := flag.String("dsn", pw, "MySQL data source name")
+	flag.Parse()
+
+	// To keep the main() func tidy we've put the code for creating a connection pool into separate
+	// openDB() function below. We pass openDB() to the DSN from the command-line flag.
+	db, err := openDB(*dsn)
+	if err != nil {
+		errorLog.Fatal(err)
+	}
+
+	defer func() {
+		err := db.Close()
+		if err != nil {
+			errorLog.Fatal(err)
+		}
+	}()
 
 	// Initialize a new instance of application containing the dependencies.
 	app := &application{
@@ -37,7 +59,18 @@ func main() {
 	}
 
 	infoLog.Printf("Starting server on %s", *addr)
-	if err := srv.ListenAndServe(); err != nil {
+	if err = srv.ListenAndServe(); err != nil {
 		errorLog.Fatal(err)
 	}
+}
+
+func openDB(dsn string) (*sql.DB, error) {
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		return nil, err
+	}
+	if err = db.Ping(); err != nil {
+		return nil, err
+	}
+	return db, nil
 }
