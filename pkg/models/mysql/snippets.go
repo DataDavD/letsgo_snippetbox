@@ -85,5 +85,52 @@ func (m *SnippetModel) Get(id int) (*models.Snippet, error) {
 
 // Latest returns the 10 most recently created snippets.
 func (m *SnippetModel) Latest() ([]*models.Snippet, error) {
-	return nil, nil
+	stmt := `SELECT id, title, created, expires FROM snippetbox.snippets
+    WHERE expires > UTC_TIMESTAMP ORDER BY created DESC LIMIT 10`
+
+	// Use the Query() method on the connection pool to execute our SQL statement.
+	// This returns a sql.Rows resultset containing the result of our query.
+	rows, err := m.DB.Query(stmt)
+	if err != nil {
+		return nil, err
+	}
+
+	// We defer rows.Close() to ensure the sql.Rows result set is
+	// always properly closed before the Latest() method returns. This defer
+	// statement should come *after* you check for an error from the Query()
+	// method. Otherwise, if Query() returns an error, you'll get a panic
+	// trying to close a nil result set.
+	defer rows.Close()
+
+	// Initialize empty slice to hold models.Snippets
+	var snippets []*models.Snippet
+
+	// Use rows.Next to iterate through the rows in the result set. This
+	// prepares the first (and then each subsequent) row to be acted on by the
+	// rows.Scan() method. If iteration over all the rows completes then the
+	// result set automatically closes itself and frees-up the underlying
+	// database connection.
+	for rows.Next() {
+		// Initialize a pointer to a new zeroed Snippet struct.
+		s := &models.Snippet{}
+
+		// Use row.Scan() to copy the values from each field in sql.Row to the
+		// corresponding field in the Snippet struct.
+		err = rows.Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
+		if err != nil {
+			return nil, err
+		}
+		snippets = append(snippets, s)
+	}
+
+	// When the rows.Next() loop has finished we call rows.Err() to retrieve any
+	// error that was encountered during the iteration. It's important to
+	// call this - don't assume that a successful iteration was completed
+	// over the whole result set.
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return snippets, nil
 }
