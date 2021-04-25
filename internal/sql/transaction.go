@@ -6,12 +6,12 @@ import (
 )
 
 // ExampleModel is an example struct for sql transaction handling
-type ExampleModel struct {
+type exampleModel struct {
 	DB *sql.DB
 }
 
 // ExampleTransaction is an example transaction method on the ExampleModel
-func (m *ExampleModel) ExampleTransaction() error {
+func (m *exampleModel) exampleTransaction() error {
 	// Calling the Begin() method on the connection pool creates a new sql.Tx
 	// object, which represents the in-progress database transaction.
 	tx, err := m.DB.Begin()
