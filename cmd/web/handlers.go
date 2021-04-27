@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"html/template"
 	// "html/template"
 	"net/http"
 	"strconv"
@@ -78,9 +79,24 @@ func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Write the snippet data as a plain-text HTTP response body.
-	if _, err = fmt.Fprintf(w, "%v", s); err != nil {
-		app.errorLog.Println("issue writing ID to response body", err)
+	// Initialize a slice containing the paths to the show.page.gohtml file,
+	// plus the base layout and footer partial templates
+	files := []string{
+		"./ui/html/show.page.gohtml",
+		"./ui/html/base.layout.gohtml",
+		"./ui/html/footer.partial.gohtml",
+	}
+
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	// And then execute the parsed templates. Notice how we are passing in the snippet data
+	// (a models.Snippet struct) as the final param.
+	if err := ts.Execute(w, s); err != nil {
+		app.serverError(w, err)
 	}
 }
 
