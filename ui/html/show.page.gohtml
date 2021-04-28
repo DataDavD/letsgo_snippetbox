@@ -1,17 +1,17 @@
 {{template "base" .}}
-{{define "title"}}Snippet #{{.ID}}
+{{define "title"}}Snippet #{{.Snippet.ID}}
 {{end}}
 
 {{define "main"}}
     <div class="snippet">
         <div class="metadata">
-            <strong>{{.Title}}</strong>
-            <span>#{{.ID}}</span>
+            <strong>{{.Snippet.Title}}</strong>
+            <span>#{{.Snippet.ID}}</span>
         </div>
-        <pre><code>{{.Content}}</code></pre>
+        <pre><code>{{.Snippet.Content}}</code></pre>
         <div class="metadata">
-            <time>Created: {{.Created}}</time>
-            <time>Expires: {{.Expires}}</time>
+            <time>Created: {{.Snippet.Created}}</time>
+            <time>Expires: {{.Snippet.Expires}}</time>
         </div>
     </div>
 {{end}}
