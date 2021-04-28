@@ -15,10 +15,10 @@ INSERT INTO snippets (title, content, created, expires)
 VALUES ('First autumn morning',
         'First autumn morning\nthe mirror I stare into\nshows my father''s face.\n\n– Murakami Kijo',
         UTC_TIMESTAMP(),
-        DATE_ADD(UTC_TIMESTAMP(), INTERVAL 7 DAY));
+        DATE_ADD(UTC_TIMESTAMP(), INTERVAL 365 DAY));
 
 INSERT INTO snippets (title, content, created, expires)
-VALUES ('First autumn morning',
-        'First autumn morning\nthe mirror I stare into\nshows my father''s face.\n\n– Murakami Kijo',
+VALUES ('DataDavD Awesome Adventures in Life',
+        'DataDavD has had an awesome, super, crazy, cool life!!!',
         UTC_TIMESTAMP(),
-        DATE_ADD(UTC_TIMESTAMP(), INTERVAL 7 DAY));
+        DATE_ADD(UTC_TIMESTAMP(), INTERVAL 365 DAY));
