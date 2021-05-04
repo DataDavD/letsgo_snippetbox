@@ -27,34 +27,26 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err)
 	}
 
-	for _, snippet := range s {
-		if _, err := fmt.Fprintf(w, "%v\n", snippet); err != nil {
-			app.serverError(w, err)
-		}
+	// Create an instance of a templateData struct holding the slice of snippets.
+	data := &templateData{Snippets: s}
+
+	files := []string{
+		"./ui/html/home.page.gohtml",
+		"./ui/html/base.layout.gohtml",
+		"./ui/html/footer.partial.gohtml",
 	}
 
-	// files := []string{
-	// 	"./ui/html/home.page.gohtml",
-	// 	"./ui/html/base.layout.gohtml",
-	// 	"./ui/html/footer.partial.gohtml",
-	// }
-	// Use the template.ParseFiles() func to read the files and store the templates
-	// in a template set. Noticed that we can pass teh slice of file paths as a variadic
-	// param?
-	// ts, err := template.ParseFiles(files...)
-	// if err != nil {
-	// 	app.serverError(w, err)
-	// 	http.Error(w, "Internal Server Error", 500)
-	// 	return
-	// }
-	// We then use the Execute() method on the template set to write the template
-	// content as the response body. The last parameter to Execute() represents any
-	// dynamic data that we want to pass in, which for now we'll leave as nil.
-	// err = ts.Execute(w, nil)
-	// if err != nil {
-	// 	app.serverError(w, err)
-	// 	http.Error(w, "Internal Server Error", 500)
-	// }
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	// Pass in the templateData struct when executing the template.
+	if terr := ts.Execute(w, data); terr != nil {
+		app.serverError(w, err)
+	}
+
 }
 
 func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {

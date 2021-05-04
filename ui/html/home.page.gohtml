@@ -4,5 +4,22 @@
 
 {{define "main"}}
     <h2>Latest Snippets</h2>
-    <p>There's nothing to see here yet!</p>
+    {{if .Snippets}}
+        <table>
+            <tr>
+                <th>Title</th>
+                <th>Created</th>
+                <th>ID</th>
+            </tr>
+            {{range .Snippets}}
+                <tr>
+                    <td><a href="/snippet?id={{.ID}}">{{.Title}}</a></td>
+                    <td>{{.Created}}</td>
+                    <td>#{{.ID}}</td>
+                </tr>
+            {{end}}
+        </table>
+    {{else}}
+        <p>There's nothing to see here yet!</p>
+    {{end}}
 {{end}}
