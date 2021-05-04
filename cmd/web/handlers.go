@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"html/template"
 	// "html/template"
 	"net/http"
 	"strconv"
@@ -27,26 +26,8 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err)
 	}
 
-	// Create an instance of a templateData struct holding the slice of snippets.
-	data := &templateData{Snippets: s}
-
-	files := []string{
-		"./ui/html/home.page.gohtml",
-		"./ui/html/base.layout.gohtml",
-		"./ui/html/footer.partial.gohtml",
-	}
-
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-
-	// Pass in the templateData struct when executing the template.
-	if terr := ts.Execute(w, data); terr != nil {
-		app.serverError(w, err)
-	}
-
+	// Use the new render helper.
+	app.render(w, r, "home.page.gohtml", &templateData{Snippets: s})
 }
 
 func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
@@ -71,28 +52,8 @@ func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Create an instance of a templateData struct holding the snippet data.
-	data := &templateData{Snippet: s}
-
-	// Initialize a slice containing the paths to the show.page.gohtml file,
-	// plus the base layout and footer partial templates
-	files := []string{
-		"./ui/html/show.page.gohtml",
-		"./ui/html/base.layout.gohtml",
-		"./ui/html/footer.partial.gohtml",
-	}
-
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-
-	// And then execute the parsed templates. Notice how we are passing in the snippet data
-	// (a models.Snippet struct) as the final param.
-	if err := ts.Execute(w, data); err != nil {
-		app.serverError(w, err)
-	}
+	// Use the new render helper.
+	app.render(w, r, "show.page.gohtml", &templateData{Snippet: s})
 }
 
 func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
