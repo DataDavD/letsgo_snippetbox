@@ -13,17 +13,13 @@ import (
 // Define a home handler func which writes a byte slice containing
 // "Hello from Snippetbox" as resp body.
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
-	// Check if the curr req path exactly matches "/". If it doesn't, use
-	// the http.NotFound() func to send 404 resp.
-	if r.URL.Path != "/" {
-		app.notFound(w)
-		// return from func to avoid proceeding to home page response
-		return
-	}
+	// Because Pat matches the "/" path exactly, we can now remove the manual check
+	// of r.URL.Path != "/" from this handler.
 
 	s, err := app.snippets.Latest()
 	if err != nil {
 		app.serverError(w, err)
+		return
 	}
 
 	// Use the new render helper.
@@ -31,10 +27,9 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
-	// Extract id value from query string and try to convert it to an integer
-	// using strconv.Atoi() func. If it can't be converted, or the value is less than 1,
-	// we return a 404 page Not Found response.
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	// Pat doesn't strip the colon from the named capture key, so we need to
+	// get the value of ":id" from the query string instead of "id".
+	id, err := strconv.Atoi(r.URL.Query().Get(":id"))
 	if err != nil || id < 1 {
 		app.notFound(w)
 		return
@@ -56,13 +51,17 @@ func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
 	app.render(w, r, "show.page.gohtml", &templateData{Snippet: s})
 }
 
-func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
-	// only allow Post
-	if r.Method != http.MethodPost {
-		w.Header().Set("Allow", http.MethodPost)
-		app.clientError(w, http.StatusMethodNotAllowed)
+// Add a new createSnippetForm handler, which for now returns a placeholder response.
+func (app *application) createSnippetForm(w http.ResponseWriter, r *http.Request) {
+	if _, err := w.Write([]byte("Create a new snippet...")); err != nil {
+		app.serverError(w, err)
 		return
 	}
+}
+
+func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
+	// Checking if the request method is a POST is now superfluous since we are using
+	// Pat's POST router and can be removed.
 
 	// Create some variables holding dummy data. We'll remove these later on during the build
 	title := "DataDavD Awesome Adventures in Life"
