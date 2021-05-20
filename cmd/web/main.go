@@ -65,7 +65,7 @@ func main() {
 	// the event of any problems.
 	srv := &http.Server{
 		Addr:     *addr,
-		ErrorLog: errorLog,
+		ErrorLog: app.errorLog,
 		Handler:  app.routes(), // Call the new app.routes() method
 	}
 
