@@ -53,10 +53,7 @@ func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
 
 // Add a new createSnippetForm handler, which for now returns a placeholder response.
 func (app *application) createSnippetForm(w http.ResponseWriter, r *http.Request) {
-	if _, err := w.Write([]byte("Create a new snippet...")); err != nil {
-		app.serverError(w, err)
-		return
-	}
+	app.render(w, r, "create.page.gohtml", nil)
 }
 
 func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
