@@ -61,7 +61,7 @@ func (app *application) createSnippetForm(w http.ResponseWriter, r *http.Request
 func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
 	// First we call r.ParseForm() which adds any data in POST request bodies
 	// to the r.PostForm map. This also works in the same way for PUT and PATCH
-	// requests. If there are any errors, we use our app.clientError helper to send
+	// requests. If there are any form_errors, we use our app.clientError helper to send
 	// a 400 Bad Request response to the user.
 	err := r.ParseForm()
 	if err != nil {
@@ -75,35 +75,38 @@ func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
 	content := r.PostForm.Get("content")
 	expires := r.PostForm.Get("expires")
 
-	// Initialize a map to hold any validation errors.
-	errors := make(map[string]string)
+	// Initialize a map to hold any validation form_errors.
+	formErrors := make(map[string]string)
 
 	// Check that the title field is not blank and is not more than 100 characters
-	// long. If it fails either of those checks, add a message to the errors
+	// long. If it fails either of those checks, add a message to the form_errors
 	// map using the field name as the key.
 	if strings.TrimSpace(title) == "" {
-		errors["title"] = "This field cannot be blank"
+		formErrors["title"] = "This field cannot be blank"
 	} else if utf8.RuneCountInString(title) > 100 {
-		errors["title"] = "This field is too long (maximum is 100 characters"
+		formErrors["title"] = "This field is too long (maximum is 100 characters"
 	}
 
 	// check that the Content field isn't blank
 	if strings.TrimSpace(content) == "" {
-		errors["content"] = "This field cannot be blank"
+		formErrors["content"] = "This field cannot be blank"
 	}
 
 	// Check that the expires field isn't blank and matches one of the permitted
 	// values ("1", "7", "365").
 	if strings.TrimSpace(expires) == "" {
-		errors["expires"] = "This field cannot be blank"
+		formErrors["expires"] = "This field cannot be blank"
 	} else if expires != "365" && expires != "7" && expires != "1" {
-		errors["expires"] = "This field is invalid"
+		formErrors["expires"] = "This field is invalid"
 	}
 
-	// If there are any errors, dump them in a plain text HTTP response and return
+	// If there are any form_errors, dump them in a plain text HTTP response and return
 	// from handler.
-	if len(errors) > 0 {
-		fmt.Fprint(w, errors)
+	if len(formErrors) > 0 {
+		if _, err := fmt.Fprint(w, formErrors); err != nil {
+			app.serverError(w, err)
+			return
+		}
 		return
 	}
 
