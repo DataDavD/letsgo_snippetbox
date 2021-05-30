@@ -6,9 +6,8 @@ import (
 	// "html/template"
 	"net/http"
 	"strconv"
-	"strings"
-	"unicode/utf8"
 
+	"github.com/DataDavD/snippetbox/pkg/forms"
 	"github.com/DataDavD/snippetbox/pkg/models"
 )
 
@@ -53,9 +52,12 @@ func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
 	app.render(w, r, "show.page.gohtml", &templateData{Snippet: s})
 }
 
-// Add a new createSnippetForm handler, which for now returns a placeholder response.
+// createSnippetForm handler creates/renders snippet form response.
 func (app *application) createSnippetForm(w http.ResponseWriter, r *http.Request) {
-	app.render(w, r, "create.page.gohtml", nil)
+	app.render(w, r, "create.page.gohtml", &templateData{
+		// Pass a new empty forms.Form object to the template.
+		Form: forms.NewForm(nil),
+	})
 }
 
 func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
@@ -69,53 +71,26 @@ func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Use the r.PostGorm.Get() method to retrieve the relevant data fields from the
-	// the r.PostForm map.
-	title := r.PostForm.Get("title")
-	content := r.PostForm.Get("content")
-	expires := r.PostForm.Get("expires")
+	// Create a new forms.Form struct containing the POSTed data from the form,
+	// then use the validation methods of forms.Form to check the content.
+	form := forms.NewForm(r.PostForm)
+	form.Required("title", "content", "expired")
+	form.MaxLength("title", 100)
+	form.PermittedValues("expires", "365", "7", "1")
 
-	// Initialize a map to hold any validation form_errors.
-	formErrors := make(map[string]string)
-
-	// Check that the title field is not blank and is not more than 100 characters
-	// long. If it fails either of those checks, add a message to the form_errors
-	// map using the field name as the key.
-	if strings.TrimSpace(title) == "" {
-		formErrors["title"] = "This field cannot be blank"
-	} else if utf8.RuneCountInString(title) > 100 {
-		formErrors["title"] = "This field is too long (maximum is 100 characters"
+	// If the form isn't valid, redisplay the template passing in the form.Form object
+	// as the data
+	if !form.Valid() {
+		app.render(w, r, "create.page.gohtml", &templateData{Form: form})
 	}
 
-	// check that the Content field isn't blank
-	if strings.TrimSpace(content) == "" {
-		formErrors["content"] = "This field cannot be blank"
-	}
-
-	// Check that the expires field isn't blank and matches one of the permitted
-	// values ("1", "7", "365").
-	if strings.TrimSpace(expires) == "" {
-		formErrors["expires"] = "This field cannot be blank"
-	} else if expires != "365" && expires != "7" && expires != "1" {
-		formErrors["expires"] = "This field is invalid"
-	}
-
-	// If there are any validation errors, re-display the create.page.gohtml
-	// template, passing in the validation errors and previously submitted
-	// r.PostForm data
-	if len(formErrors) > 0 {
-		app.render(w, r, "create.page.gohtml", &templateData{
-			FormData:   r.PostForm,
-			FormErrors: formErrors,
-		})
-		return
-	}
-
-	// Create a new snippet record in the database using the form data.
-	id, err := app.snippets.Insert(title, content, expires)
+	// Because the form data (with type url.Values) has been anonymously embedded in the
+	// form.Form struct, we can use the Get() method to retrieve the validated value for a
+	// particular form field.
+	id, err := app.snippets.Insert(form.Get("title"), form.Get("content"),
+		form.Get("expires"))
 	if err != nil {
 		app.serverError(w, err)
-		return
 	}
 
 	// Redirect the user to the relevant page for the created snippet

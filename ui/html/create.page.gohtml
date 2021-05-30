@@ -4,35 +4,37 @@
 
 {{define  "main"}}
     <form action="/snippet/create" method="POST">
-        <div>
-            <label for="title">Title:</label>
-            {{with .FormErrors.title}}
-                <label class="error">{{.}}</label>
-            {{end}}
-            <input type="text" name="title" id="title" value="{{.FormData.Get "title"}}">
-        </div>
-        <div>
-            <label for="content">Content:</label>
-            {{with .FormErrors.content}}
-                <label class="error">{{.}}</label>
-            {{end}}
-            <textarea name="content" id="content">{{.FormData.Get "content"}}</textarea>
-        </div>
-        <div>
-            <p>Delete in:</p>
-            {{with .FormErrors.expires}}
-                <label class="error">{{.}}</label>
-            {{end}}
-            {{$exp := or (.FormData.Get "expires") "365"}}
-            <input type="radio" name="expires" value="365" {{if (eq $exp "365")}}checked{{end}} id="year">
-            <label for="year">One Year</label>
-            <input type="radio" name="expires" value="7" {{if (eq $exp "7")}}checked{{end}} id="week">
-            <label for="week">One Week</label>
-            <input type="radio" name="expires" value="1" {{if (eq $exp "1")}}checked{{end}} id="day">
-            <label for="day">One Day</label>
-        </div>
-        <div>
-            <input type="submit" value="Publish snippet">
-        </div>
+        {{with .Form}}
+            <div>
+                <label for="title">Title:</label>
+                {{with .FormErrors.Get "title"}}
+                    <label class="error">{{.}}</label>
+                {{end}}
+                <input type="text" name="title" id="title" value="{{.Values.Get "title"}}">
+            </div>
+            <div>
+                <label for="content">Content:</label>
+                {{with .FormErrors.Get "content"}}
+                    <label class="error">{{.}}</label>
+                {{end}}
+                <textarea name="content" id="content">{{.Values.Get "content"}}</textarea>
+            </div>
+            <div>
+                <p>Delete in:</p>
+                {{with .FormErrors.Get "expires"}}
+                    <label class="error">{{.}}</label>
+                {{end}}
+                {{$exp := or (.Values.Get "expires") "365"}}
+                <input type="radio" name="expires" value="365" {{if (eq $exp "365")}}checked{{end}} id="year">
+                <label for="year">One Year</label>
+                <input type="radio" name="expires" value="7" {{if (eq $exp "7")}}checked{{end}} id="week">
+                <label for="week">One Week</label>
+                <input type="radio" name="expires" value="1" {{if (eq $exp "1")}}checked{{end}} id="day">
+                <label for="day">One Day</label>
+            </div>
+            <div>
+                <input type="submit" value="Publish snippet">
+            </div>
+        {{end}}
     </form>
 {{end}}
