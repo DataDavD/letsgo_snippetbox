@@ -8,14 +8,17 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/DataDavD/snippetbox/pkg/models/mysql"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/golangcollege/sessions"
 )
 
 type application struct {
 	errorLog      *log.Logger
 	infoLog       *log.Logger
+	session       *sessions.Session
 	snippets      *mysql.SnippetModel
 	templateCache map[string]*template.Template
 }
@@ -30,6 +33,9 @@ func main() {
 
 	addr := flag.String("addr", ":4000", "HTTP network address")
 	dsn := flag.String("dsn", pw, "MySQL data source name")
+	// Define a new command-line flag for the session secrete (a random key which will be
+	// used to encrypt and authenticate session cookies). It should be 32 bytes long.
+	secret := flag.String("secret", "s6Ndh+pPbnzHbS*+9Pk8qGWhTzbpa@ge", "Secret key")
 	flag.Parse()
 
 	// To keep the main() func tidy we've put the code for creating a connection pool into separate
@@ -51,10 +57,16 @@ func main() {
 		errorLog.Fatal(err)
 	}
 
-	// Initialize a new instance of application containing the dependencies.
+	// Use the sessions.New() function to initialize a new session manager, passing in the secret
+	// key as the parameter. Then configure it so that sessions always expire after 12 hours.
+	session := sessions.New([]byte(*secret))
+	session.Lifetime = 12 * time.Hour
+
+	// And add the session manager to our application dependencies.
 	app := &application{
 		errorLog:      errorLog,
 		infoLog:       infoLog,
+		session:       session,
 		snippets:      &mysql.SnippetModel{DB: db},
 		templateCache: templateCache,
 	}
