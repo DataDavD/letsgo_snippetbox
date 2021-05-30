@@ -6,19 +6,29 @@
     <form action="/snippet/create" method="POST">
         <div>
             <label for="title">Title:</label>
-            <input type="text" name="title" id="title">
+            {{with .FormErrors.title}}
+                <label class="error">{{.}}</label>
+            {{end}}
+            <input type="text" name="title" id="title" value="{{.FormData.Get "title"}}">
         </div>
         <div>
             <label for="content">Content:</label>
-            <textarea name="content" id="content"></textarea>
+            {{with .FormErrors.content}}
+                <label class="error">{{.}}</label>
+            {{end}}
+            <textarea name="content" id="content">{{.FormData.Get "content"}}</textarea>
         </div>
         <div>
             <p>Delete in:</p>
-            <input type="radio" name="expires" value="365" checked id="year">
+            {{with .FormErrors.expires}}
+                <label class="error">{{.}}</label>
+            {{end}}
+            {{$exp := or (.FormData.Get "expires") "365"}}
+            <input type="radio" name="expires" value="365" {{if (eq $exp "365")}}checked{{end}} id="year">
             <label for="year">One Year</label>
-            <input type="radio" name="expires" value="7" id="week">
+            <input type="radio" name="expires" value="7" {{if (eq $exp "7")}}checked{{end}} id="week">
             <label for="week">One Week</label>
-            <input type="radio" name="expires" value="1" id="day">
+            <input type="radio" name="expires" value="1" {{if (eq $exp "1")}}checked{{end}} id="day">
             <label for="day">One Day</label>
         </div>
         <div>
