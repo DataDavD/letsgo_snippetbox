@@ -20,7 +20,7 @@ func (app *application) routes() http.Handler {
 	// Register exact matches before wildcard route match (i.e. :id in Get method for
 	// '/snippet/create').
 	// Update these routes to use the dynamic middleware chain follow by the appropriate handler
-	// funcion.
+	// function.
 	mux.Get("/", dynamicMiddleware.ThenFunc(app.home))
 	mux.Get("/snippet/create", dynamicMiddleware.ThenFunc(app.createSnippetForm))
 	mux.Get("/snippet/:id", dynamicMiddleware.ThenFunc(app.showSnippet))
@@ -29,6 +29,5 @@ func (app *application) routes() http.Handler {
 	fileServer := http.FileServer(http.Dir("./ui/static"))
 	mux.Get("/static/", http.StripPrefix("/static", fileServer))
 
-	// Wrap the existing chain with the recoverPanic middleware.
 	return standardMiddleware.Then(mux)
 }

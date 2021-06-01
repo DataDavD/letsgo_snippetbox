@@ -48,8 +48,17 @@ func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Use the session.PopString() method to retrieve the value for the "flash" key.
+	// PopString() also deletes the key and value from the session data, so it acts like
+	// a one-time fetch. If there is no matching key in the session data this will return
+	// an empty string.
+	flash := app.session.PopString(r, "flash")
+
 	// Use the new render helper.
-	app.render(w, r, "show.page.gohtml", &templateData{Snippet: s})
+	app.render(w, r, "show.page.gohtml", &templateData{
+		Flash:   flash,
+		Snippet: s,
+	})
 }
 
 // createSnippetForm handler creates/renders snippet form response.
@@ -82,6 +91,7 @@ func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
 	// as the data
 	if !form.Valid() {
 		app.render(w, r, "create.page.gohtml", &templateData{Form: form})
+		return
 	}
 
 	// Because the form data (with type url.Values) has been anonymously embedded in the
@@ -91,7 +101,14 @@ func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
 		form.Get("expires"))
 	if err != nil {
 		app.serverError(w, err)
+		return
 	}
+
+	// Use the session.Put() method to add a string value ("Your snippet was saved successfully")
+	// and the corresponding key ("flash") to the session data. Note that if there is no existing
+	// session for the current user (or their session has expired) then a new, empty,
+	// session for them will automatically be created by the session middleware.
+	app.session.Put(r, "flash", "Snippet successfully created!")
 
 	// Redirect the user to the relevant page for the created snippet
 	http.Redirect(w, r, fmt.Sprintf("/snippet/%d", id), http.StatusSeeOther)
