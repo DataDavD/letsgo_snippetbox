@@ -48,15 +48,8 @@ func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Use the session.PopString() method to retrieve the value for the "flash" key.
-	// PopString() also deletes the key and value from the session data, so it acts like
-	// a one-time fetch. If there is no matching key in the session data this will return
-	// an empty string.
-	flash := app.session.PopString(r, "flash")
-
 	// Use the new render helper.
 	app.render(w, r, "show.page.gohtml", &templateData{
-		Flash:   flash,
 		Snippet: s,
 	})
 }
