@@ -83,7 +83,7 @@ func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
 	// Create a new forms.Form struct containing the POSTed data from the form,
 	// then use the validation methods of forms.Form to check the content.
 	form := forms.NewForm(r.PostForm)
-	form.Required("title", "content", "expired")
+	form.Required("title", "content", "expires")
 	form.MaxLength("title", 100)
 	form.PermittedValues("expires", "365", "7", "1")
 
