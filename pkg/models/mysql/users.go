@@ -21,7 +21,7 @@ func (m *UserModel) Authenticate(email, password string) (int, error) {
 	return 0, nil
 }
 
-// Get fetches details for a specifc user based on their user ID.
+// Get fetches details for a specific user based on their user ID.
 func (m *UserModel) Get(id int) (*models.User, error) {
 	return nil, nil
 }
