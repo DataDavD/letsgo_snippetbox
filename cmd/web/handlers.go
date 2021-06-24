@@ -107,13 +107,38 @@ func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("/snippet/%d", id), http.StatusSeeOther)
 }
 
+// signupUserForm handles the signup user form.
 func (app *application) signupUserForm(w http.ResponseWriter, r *http.Request) {
 	app.render(w, r, "signup.page.gohtml", &templateData{
 		Form: forms.NewForm(nil),
 	})
 }
 
+// signupUser handles users getting signed up.
 func (app *application) signupUser(w http.ResponseWriter, r *http.Request) {
+	// Parse the form data.
+	err := r.ParseForm()
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	// Validate the form contents using form helpsers.
+	form := forms.NewForm(r.PostForm)
+	form.Required("name", "email", "password")
+	form.MaxLength("name", 255)
+	form.MaxLength("email", 255)
+	form.MatchesPattern("email", forms.EmailRX)
+	form.MinLength("password", 10)
+
+	// If there are any errors, redisplay the signup form.
+	if !form.Valid() {
+		app.render(w, r, "signup.page.gohtml", &templateData{
+			Form: form,
+		})
+	}
+
+	// Otherwise send a placeholder response (for now).
 	fmt.Fprintln(w, "Create a new user...")
 }
 
