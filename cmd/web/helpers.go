@@ -50,7 +50,7 @@ func (app *application) addDefaultData(td *templateData, r *http.Request) *templ
 func (app *application) render(w http.ResponseWriter, r *http.Request, name string, td *templateData) {
 	// Retrieve the appropriate template set from the cache based on the page name
 	// (like 'home.page.gohtml'). If no entry exists in the cache with the provided name,
-	// call teh serverError helper method.
+	// call the serverError helper method.
 	ts, ok := app.templateCache[name]
 	if !ok {
 		app.serverError(w, fmt.Errorf("the template %s does not exist", name))

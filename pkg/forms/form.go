@@ -7,15 +7,14 @@ import (
 	"unicode/utf8"
 )
 
-// Create a custom Form struct, which anonymously embeds a url.Values object
-// to (to hold the form data) and an FormErrors field to hold any validation errors
-// for the form data
+// Form anonymously embeds a url.Values object to (to hold the form data)
+// and an FormErrors field to hold any validation errors for the form data
 type Form struct {
 	url.Values
 	FormErrors formErrors
 }
 
-// New initializes a custom Form struct. Notice that this takes the form data as
+// NewForm initializes a custom Form struct. Notice that this takes the form data as
 // the parameter.
 func NewForm(data url.Values) *Form {
 	return &Form{
