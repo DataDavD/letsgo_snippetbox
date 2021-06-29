@@ -169,7 +169,32 @@ func (app *application) loginUserForm(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) loginUser(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Authenticate and login the user...")
+	err := r.ParseForm()
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	// Check whether the credentials are valid. If they're not, add a generic error
+	// message to the form errors map and re-display the login page.
+	form := forms.NewForm(r.PostForm)
+	id, err := app.users.Authenticate(form.Get("email"),
+		form.Get("password")) // Using embedded url.Values.Get method
+	if err != nil {
+		if errors.Is(err, models.ErrInvalidCredentials) {
+			form.FormErrors.Add("generic", "Email or Password is incorrect")
+			app.render(w, r, "login.page.gohtml", &templateData{Form: form})
+		} else {
+			app.serverError(w, err)
+		}
+		return
+	}
+
+	// Add the ID of the current user to the session, so that they are now "logged in".
+	app.session.Put(r, "authenticatedUserID", id)
+
+	// Redirect the user to the create snippet page.
+	http.Redirect(w, r, "/snippet/create", http.StatusSeeOther)
 }
 
 func (app application) logoutUser(w http.ResponseWriter, r *http.Request) {
