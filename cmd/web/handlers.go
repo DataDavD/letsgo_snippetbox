@@ -163,7 +163,9 @@ func (app *application) signupUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) loginUserForm(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Display the user login form...")
+	app.render(w, r, "login.page.gohtml", &templateData{
+		Form: forms.NewForm(nil),
+	})
 }
 
 func (app *application) loginUser(w http.ResponseWriter, r *http.Request) {
