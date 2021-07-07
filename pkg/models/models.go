@@ -26,10 +26,10 @@ type Snippet struct {
 }
 
 type User struct {
-	ID             int
-	Name           string
-	Email          string
-	HashedPassword []byte
-	Created        time.Time
-	Active         bool
+	ID       int
+	Name     string
+	Email    string
+	hashedPw []byte
+	Created  time.Time
+	Active   bool
 }

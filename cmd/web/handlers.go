@@ -133,15 +133,13 @@ func (app *application) signupUser(w http.ResponseWriter, r *http.Request) {
 
 	// If there are any errors, redisplay the signup form.
 	if !form.Valid() {
-		app.render(w, r, "signup.page.gohtml", &templateData{
-			Form: form,
-		})
+		app.render(w, r, "signup.page.gohtml", &templateData{Form: form})
 		return
 	}
 
 	// Try to create a new user record in the database. If the email already
 	// exists then add an error message to the form and re-display it.
-	err = app.users.Insert(form.Get("name"), form.Get("email"), form.Get("password)")) // Using embedded url.Values.Get method
+	err = app.users.Insert(form.Get("name"), form.Get("email"), form.Get("password")) // Using embedded url.Values.Get method
 	if err != nil {
 		if errors.Is(err, models.ErrDuplicateEmail) {
 			form.FormErrors.Add("email", "Address is already in use")

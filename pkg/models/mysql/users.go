@@ -55,10 +55,10 @@ func (u *UserModel) Authenticate(email, password string) (int, error) {
 	// If no matching email exists, or the user is not active, we return the
 	// ErrInvalidCredentials error.
 	var id int
-	var hashedPW []byte
+	var hashedPw []byte
 	stmt := `SELECT id, hashed_password FROM snippetbox.users WHERE email = ? AND active = TRUE`
 	row := u.DB.QueryRow(stmt, email)
-	err := row.Scan(&id, &hashedPW)
+	err := row.Scan(&id, &hashedPw)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return 0, models.ErrInvalidCredentials
@@ -70,7 +70,7 @@ func (u *UserModel) Authenticate(email, password string) (int, error) {
 	// Check whether the hashed password and plain-text password provided match.
 	// If they don't, we return the ErrInvalidCredentials error.
 
-	err = bcrypt.CompareHashAndPassword(hashedPW, []byte(password))
+	err = bcrypt.CompareHashAndPassword(hashedPw, []byte(password))
 	if err != nil {
 		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
 			return 0, models.ErrInvalidCredentials
