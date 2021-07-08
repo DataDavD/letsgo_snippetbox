@@ -18,15 +18,21 @@
         <!-- Update the navigation to include signup, login, and logout links -->
         <div>
             <a href="/">Home</a>
-            <!-- Add a link to the new form -->
-            <a href="/snippet/create">Create Snippet</a>
+            <!-- Toggle the navigation links based on whether user is logged in or not -->
+            {{if .IsAuthenticated}}
+                <a href="/snippet/create">Create Snippet</a>
+            {{end}}
         </div>
         <div>
-            <a href="/user/signup">Signup</a>
-            <a href="/user/login">Login</a>
-            <form action="/user/logout" method="POST">
-                <button>Logout</button>
-            </form>
+            <!-- Toggle the navigation links based on whether user is logged in or not -->
+            {{if .IsAuthenticated}}
+                <form action="/user/logout" method="POST">
+                    <button>Logout</button>
+                </form>
+            {{else}}
+                <a href="/user/signup">Signup</a>
+                <a href="/user/login">Login</a>
+            {{end}}
         </div>
     </nav>
     <main>

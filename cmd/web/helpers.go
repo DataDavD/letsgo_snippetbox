@@ -35,8 +35,8 @@ func (app *application) notFound(w http.ResponseWriter) {
 }
 
 // addDefaultData takes a pointer to a templateData struct
-// and adds the current year to the CurrentYear field, and then returns
-// the pointer. Note, we're not using the *http.Request parameter at the
+// and adds the current year to the CurrentYear field, as well as the Flash message,
+// and then returns the pointer. Note, we're not using the *http.Request parameter at the
 // moment, but we will do later in the book.
 func (app *application) addDefaultData(td *templateData, r *http.Request) *templateData {
 	if td == nil {
@@ -44,6 +44,7 @@ func (app *application) addDefaultData(td *templateData, r *http.Request) *templ
 	}
 	td.CurrentYear = time.Now().Year()
 	td.Flash = app.session.PopString(r, "flash")
+	td.IsAuthenticated = app.isAuthenticated(r)
 	return td
 }
 
@@ -74,4 +75,8 @@ func (app *application) render(w http.ResponseWriter, r *http.Request, name stri
 		app.serverError(w, err)
 		return
 	}
+}
+
+func (app *application) isAuthenticated(r *http.Request) bool {
+	return app.session.Exists(r, "authenticatedUserID")
 }
