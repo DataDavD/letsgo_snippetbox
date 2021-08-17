@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"runtime/debug"
 	"time"
+
+	"github.com/justinas/nosurf"
 )
 
 // The serverError helper writes an error message and stack trace to the errorLog,
@@ -45,6 +47,7 @@ func (app *application) addDefaultData(td *templateData, r *http.Request) *templ
 	td.CurrentYear = time.Now().Year()
 	td.Flash = app.session.PopString(r, "flash")
 	td.IsAuthenticated = app.isAuthenticated(r)
+	td.CSRFToken = nosurf.Token(r)
 	return td
 }
 
@@ -69,7 +72,7 @@ func (app *application) render(w http.ResponseWriter, r *http.Request, name stri
 		return
 	}
 
-	// Write the contents of the buffer to the http.ResponseWriter. Again, this is another time
+	// Write the contents of the buffer to the http.ResponseWriter. Again, this is another place
 	// where we pass our http.ResponseWriter to a function that take an io.Writer
 	if _, err = buff.WriteTo(w); err != nil {
 		app.serverError(w, err)

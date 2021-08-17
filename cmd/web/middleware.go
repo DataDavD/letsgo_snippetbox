@@ -66,6 +66,7 @@ func (app *application) requireAuth(next http.Handler) http.Handler {
 	})
 }
 
+// noSurf uses customized CSRF cookie with the Secure, Path and HttpOnly flags set.
 func noSurf(next http.Handler) http.Handler {
 	csrfHandler := nosurf.New(next)
 	csrfHandler.SetBaseCookie(http.Cookie{

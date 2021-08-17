@@ -8,11 +8,11 @@ import (
 )
 
 func (app *application) routes() http.Handler {
-	// Create a middleware chain containing our 'standard" middleware
+	// Create a middleware chain containing our 'standard' middleware
 	// which will be used for every request our app receives.
 	standardMiddleware := alice.New(app.recoverPanic, app.logRequest, secureHeaders)
 
-	// Use the nosurf middleware on all our dynamic routes.
+	// Use the noSurf middleware on all our dynamic routes.
 	dynamicMiddleware := alice.New(app.session.Enable, noSurf)
 
 	mux := pat.New()

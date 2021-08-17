@@ -4,6 +4,8 @@
 
 {{define  "main"}}
     <form action="/snippet/create" method="POST">
+        <!-- Include the CSRF token -->
+        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
         {{with .Form}}
             <div>
                 <label for="title">Title:</label>
