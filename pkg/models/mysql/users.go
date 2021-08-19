@@ -88,7 +88,7 @@ func (u *UserModel) Get(id int) (*models.User, error) {
 	usr := &models.User{}
 
 	stmt := `SELECT id, name, email, created, active FROM snippetbox.users WHERE id = ?`
-	err := u.DB.QueryRow(stmt, id).Scan(&usr.ID, &usr.Name, &usr.Email, &usr.Created, usr.Active)
+	err := u.DB.QueryRow(stmt, id).Scan(&usr.ID, &usr.Name, &usr.Email, &usr.Created, &usr.Active)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, models.ErrNoRecord
@@ -97,5 +97,4 @@ func (u *UserModel) Get(id int) (*models.User, error) {
 		}
 	}
 	return usr, nil
-
 }

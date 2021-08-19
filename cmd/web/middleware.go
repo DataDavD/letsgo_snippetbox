@@ -1,9 +1,12 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
+	"github.com/DataDavD/snippetbox/pkg/models"
 	"github.com/justinas/nosurf"
 )
 
@@ -76,4 +79,37 @@ func noSurf(next http.Handler) http.Handler {
 	})
 
 	return csrfHandler
+}
+
+func (app *application) authenticate(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Check if authenticatedUserID value exists in the session. If this *is not present*
+		// then call the next handler in the chain as normal
+		exists := app.session.Exists(r, "authenticatedUserID")
+		if !exists {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		// Fetch the details of the current user from the database based on session
+		// authenticatedUserID. If no matching record is found,
+		// or the current user has been deactivated, remove the (invalid) authenticatedUserID value
+		// from their session and call the next handler in the chain as normal.
+		user, err := app.users.Get(app.session.GetInt(r, "authenticatedUserID"))
+		if errors.Is(err, models.ErrNoRecord) || !user.Active {
+			app.session.Remove(r, "authenticatedUserID")
+			next.ServeHTTP(w, r)
+			return
+		} else if err != nil {
+			app.serverError(w, err)
+			return
+		}
+
+		// Otherwise, we know the that the request is coming from an activated, authenticated user.
+		// We create a new copy of the request, with a true boolean value added to the request
+		// context to indicate this, and call the next handler in the chain *using this new copy of
+		// the request*.
+		ctx := context.WithValue(r.Context(), contextKeyIsAuthenticated, true)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
 }
