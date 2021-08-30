@@ -27,7 +27,7 @@ func TestHumanDate(t *testing.T) {
 		{
 			name: "CET",
 			tm:   time.Date(2020, 12, 17, 10, 0, 0, 0, time.FixedZone("CET", 1*60*60)),
-			want: "17 DEC 2020 at 09:00",
+			want: "17 Dec 2020 at 09:00",
 		},
 	}
 
