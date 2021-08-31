@@ -39,5 +39,8 @@ func (app *application) routes() http.Handler {
 	fileServer := http.FileServer(http.Dir("./ui/static"))
 	mux.Get("/static/", http.StripPrefix("/static", fileServer))
 
+	// Health check
+	mux.Get("/ping", http.HandlerFunc(ping))
+
 	return standardMiddleware.Then(mux)
 }

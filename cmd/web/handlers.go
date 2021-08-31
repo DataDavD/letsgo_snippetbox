@@ -11,6 +11,10 @@ import (
 	"github.com/DataDavD/snippetbox/pkg/models"
 )
 
+func ping(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("OK"))
+}
+
 // Define a home handler func which writes a byte slice containing
 // "Hello from Snippetbox" as resp body.
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
