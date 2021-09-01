@@ -10,6 +10,7 @@ import (
 // TestPing tests ping handler for the correct response status code, 200 and
 // the correct response body, "OK".
 func TestPing(t *testing.T) {
+	t.Parallel()
 	// Initialize a new httptest.ResponseRecorder.
 	rr := httptest.NewRecorder()
 

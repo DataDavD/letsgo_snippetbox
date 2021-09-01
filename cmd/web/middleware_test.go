@@ -8,6 +8,7 @@ import (
 )
 
 func TestSecureHeaders(t *testing.T) {
+	t.Parallel()
 	// Initialize a new httptest.ResponseRecorder
 	rr := httptest.NewRecorder()
 
