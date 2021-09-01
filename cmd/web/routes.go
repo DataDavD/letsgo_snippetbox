@@ -19,7 +19,7 @@ func (app *application) routes() http.Handler {
 	mux := pat.New()
 
 	// Health check
-	mux.Get("/ping", http.HandlerFunc(app.ping))
+	mux.Get("/healthcheck", http.HandlerFunc(app.ping))
 
 	// Register exact matches before wildcard route match (i.e. :id in Get method for
 	// '/snippet/create').
