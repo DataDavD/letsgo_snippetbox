@@ -5,6 +5,10 @@ import (
 	"time"
 )
 
+// TestHumanDate tests that the humanDate function correctly returns a UTC date in our
+// human-readable string format. Also, it tests the function returns an empty
+// string if time is the zero time value. Also, we test that the function correctly
+// converts the time to UTC.
 func TestHumanDate(t *testing.T) {
 	// Create a slice of anonymous structs containing the test case name,
 	// input to our humanDate() function (the tm field), and expected output
