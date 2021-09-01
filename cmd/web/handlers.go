@@ -11,8 +11,11 @@ import (
 	"github.com/DataDavD/snippetbox/pkg/models"
 )
 
-func ping(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("OK"))
+func (app *application) ping(w http.ResponseWriter, r *http.Request) {
+	if _, err := w.Write([]byte("OK")); err != nil {
+		app.serverError(w, err)
+		return
+	}
 }
 
 // Define a home handler func which writes a byte slice containing

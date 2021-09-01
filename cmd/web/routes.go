@@ -17,6 +17,10 @@ func (app *application) routes() http.Handler {
 	dynamicMiddleware := alice.New(app.session.Enable, noSurf, app.authenticate)
 
 	mux := pat.New()
+
+	// Health check
+	mux.Get("/ping", http.HandlerFunc(app.ping))
+
 	// Register exact matches before wildcard route match (i.e. :id in Get method for
 	// '/snippet/create').
 	// Update these routes to use the dynamic middleware chain follow by the appropriate handler
@@ -38,9 +42,6 @@ func (app *application) routes() http.Handler {
 
 	fileServer := http.FileServer(http.Dir("./ui/static"))
 	mux.Get("/static/", http.StripPrefix("/static", fileServer))
-
-	// Health check
-	mux.Get("/ping", http.HandlerFunc(ping))
 
 	return standardMiddleware.Then(mux)
 }
