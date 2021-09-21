@@ -17,7 +17,7 @@ import (
 // containing mocked dependencies to be used for testing.
 func newTestApp(t *testing.T) *application {
 	// Create an instance of the template cache.
-	templateCache, err := newTemplateCache("./ui/html")
+	templateCache, err := newTemplateCache("./../../ui/html/")
 	if err != nil {
 		t.Fatal(err)
 	}
