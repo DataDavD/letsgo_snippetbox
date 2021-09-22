@@ -1,17 +1,36 @@
 package main
 
 import (
+	"html"
 	"io"
 	"log"
 	"net/http"
 	"net/http/cookiejar"
 	"net/http/httptest"
+	"os"
+	"regexp"
 	"testing"
 	"time"
 
 	"github.com/DataDavD/snippetbox/pkg/models/mock"
 	"github.com/golangcollege/sessions"
 )
+
+// Define a regular expression which captures the CSRF token value from the HTML for our
+// user signup page.
+var csrfTokenRX = regexp.MustCompile(`<input type='hidden' name='csrf_token' value='(.+)'>`)
+
+func extractCSRFToken(t *testing.T, body []byte) string {
+	// Use the FindSubmatch method to extract the token from the HTML body.
+	// Note that this returns an array with the entire matched pattern in the first
+	// position, and th values of any captured data in the subsequent positions.
+	matches := csrfTokenRX.FindSubmatch(body)
+	if len(matches) < 2 {
+		t.Fatal("no csrf token found in body")
+	}
+
+	return html.UnescapeString(string(matches[1]))
+}
 
 // newTestApp returns an instance of application struct
 // containing mocked dependencies to be used for testing.
@@ -29,8 +48,8 @@ func newTestApp(t *testing.T) *application {
 
 	// Initialize the dependencies, using the mocks for the loggers and database models.
 	return &application{
-		errorLog:      log.New(io.Discard, "", 0),
-		infoLog:       log.New(io.Discard, "", 0),
+		errorLog:      log.New(os.Stderr, "", 0),
+		infoLog:       log.New(os.Stdout, "", 0),
 		session:       session,
 		snippets:      &mock.SnippetModel{},
 		templateCache: templateCache,
