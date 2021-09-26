@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/http/httptest"
-	"os"
+	"net/url"
 	"regexp"
 	"testing"
 	"time"
@@ -106,5 +106,30 @@ func (ts *testServer) get(t *testing.T, urlPath string) (int, http.Header, []byt
 		t.Fatal(err)
 	}
 
+	return rs.StatusCode, rs.Header, body
+}
+
+// postForm sends POST requests to the test server. The final parameter to this method is a
+// url.Values object which can contain any data that you want to send in the request body.
+func (ts *testServer) postForm(t *testing.T, urlPath string, form url.Values) (int, http.Header,
+	[]byte) {
+	rs, err := ts.Client().PostForm(ts.URL+urlPath, form)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Read the response body.
+	defer func() {
+		if err := rs.Body.Close(); err != nil {
+			t.Fatal(err)
+		}
+	}()
+
+	body, err := io.ReadAll(rs.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Return the response status, headers, and body.
 	return rs.StatusCode, rs.Header, body
 }
