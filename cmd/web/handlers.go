@@ -159,7 +159,7 @@ func (app *application) signupUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Otherwise add a confirmation flash message to the session confirming that
+	// Otherwise, add a confirmation flash message to the session confirming that
 	// their signup worked and asking them to log in.
 	app.session.Put(r, "flash", "Your signup was successful. Please log in.")
 
