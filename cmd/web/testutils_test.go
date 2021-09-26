@@ -48,8 +48,8 @@ func newTestApp(t *testing.T) *application {
 
 	// Initialize the dependencies, using the mocks for the loggers and database models.
 	return &application{
-		errorLog:      log.New(os.Stderr, "", 0),
-		infoLog:       log.New(os.Stdout, "", 0),
+		errorLog:      log.New(io.Discard, "", 0),
+		infoLog:       log.New(io.Discard, "", 0),
 		session:       session,
 		snippets:      &mock.SnippetModel{},
 		templateCache: templateCache,
