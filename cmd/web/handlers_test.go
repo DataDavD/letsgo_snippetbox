@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"net/http"
 	"testing"
 )
@@ -88,8 +87,6 @@ func TestSignupUser(t *testing.T) {
 	// Make a GET /user/signup request and then extract the CSRF token from the
 	// response body.
 	_, _, body := ts.get(t, "/user/signup")
-	fmt.Println(body)
-	fmt.Printf("typ of body is %T", body)
 	csrfToken := extractCSRFToken(t, body)
 
 	// Log the CSRF token value in our test output. To see the output from the
