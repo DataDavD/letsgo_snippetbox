@@ -22,7 +22,7 @@ func (u *UserModel) Insert(name, email, password string) error {
 		return err
 	}
 
-	stmt := `INSERT INTO snippetbox.users (name, email, hashed_password, created)
+	stmt := `INSERT INTO users (name, email, hashed_password, created)
 	VALUES(?, ?, ?, UTC_TIMESTAMP())`
 
 	// Use the Exec(0 method to insert the user details and hashed password
@@ -56,7 +56,7 @@ func (u *UserModel) Authenticate(email, password string) (int, error) {
 	// ErrInvalidCredentials error.
 	var id int
 	var hashedPw []byte
-	stmt := `SELECT id, hashed_password FROM snippetbox.users WHERE email = ? AND active = TRUE`
+	stmt := `SELECT id, hashed_password FROM users WHERE email = ? AND active = TRUE`
 	row := u.DB.QueryRow(stmt, email)
 	err := row.Scan(&id, &hashedPw)
 	if err != nil {

@@ -1,3 +1,5 @@
-DROP TABLE IF EXISTS test_snippetbox.users;
+USE test_snippetbox;
 
-DROP TABLE IF EXISTS test_snippetbox.snippets;
+DROP TABLE IF EXISTS users;
+
+DROP TABLE IF EXISTS snippets;

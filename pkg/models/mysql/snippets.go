@@ -23,7 +23,7 @@ type SnippetModel struct {
 func (m *SnippetModel) Insert(title, content, expires string) (int, error) {
 	// Write the SQL statement we want to execute. It's split over two lines which
 	// why its surrounded with backquotes instead of normal double quotes.
-	stmt := `INSERT INTO snippetbox.snippets (title, content, created, expires)
+	stmt := `INSERT INTO snippets (title, content, created, expires)
 	VALUES(?, ?, UTC_TIMESTAMP(), DATE_ADD(UTC_TIMESTAMP(), INTERVAL ? DAY))`
 
 	// Use the Exec() method on the embedded database connection pool to execute the statement.
@@ -49,7 +49,7 @@ func (m *SnippetModel) Insert(title, content, expires string) (int, error) {
 
 // Get returns a specific snippet based on the id. It returns ID and error.
 func (m *SnippetModel) Get(id int) (*models.Snippet, error) {
-	stmt := `SELECT id, title, content, created, expires FROM snippetbox.snippets
+	stmt := `SELECT id, title, content, created, expires FROM snippets
 	WHERE expires > UTC_TIMESTAMP() and id = ?`
 
 	// Initialize a pointer to a new zeroed Snippet struct.
@@ -85,7 +85,7 @@ func (m *SnippetModel) Get(id int) (*models.Snippet, error) {
 
 // Latest returns the 10 most recently created snippets.
 func (m *SnippetModel) Latest() ([]*models.Snippet, error) {
-	stmt := `SELECT id, title, content, created, expires FROM snippetbox.snippets
+	stmt := `SELECT id, title, content, created, expires FROM snippets
     WHERE expires > UTC_TIMESTAMP ORDER BY created DESC LIMIT 10`
 
 	// Use the Query() method on the connection pool to execute our SQL statement.
