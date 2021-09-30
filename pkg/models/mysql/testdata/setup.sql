@@ -1,4 +1,4 @@
-CREATE TABLE snippets
+CREATE TABLE test_snippetbox.snippets
 (
     id      INTEGER      NOT NULL PRIMARY KEY AUTO_INCREMENT,
     title   VARCHAR(100) NOT NULL,
@@ -7,9 +7,9 @@ CREATE TABLE snippets
     expires DATETIME     NOT NULL
 );
 
-CREATE INDEX idx_snippets_created ON snippets (created);
+CREATE INDEX idx_snippets_created ON test_snippetbox.snippets (created);
 
-CREATE TABLE users
+CREATE TABLE test_snippetbox.users
 (
     id              INTEGER      NOT NULL PRIMARY KEY AUTO_INCREMENT,
     name            VARCHAR(255) NOT NULL,
@@ -19,11 +19,11 @@ CREATE TABLE users
     active          BOOLEAN      NOT NULL DEFAULT TRUE
 );
 
-ALTER TABLE users
+ALTER TABLE test_snippetbox.users
     ADD CONSTRAINT users_uc_email UNIQUE (email);
 
-INSERT INTO users (name, email, hashed_password, created)
-VALUES ('Alice Jones',
-        'alice@example.com',
+INSERT INTO test_snippetbox.users (name, email, hashed_password, created)
+VALUES ('Alice Jones2',
+        'alice2@example.com',
         '$2a$12$NuTjWXm3KKntReFwyBVHyuf/to.HEwTy.eS206TNfkGfr6HzGJSWG',
         '2018-12-23 17:25:22');
