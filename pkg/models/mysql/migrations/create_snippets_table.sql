@@ -1,3 +1,4 @@
+USE snippetbox;
 CREATE TABLE snippets
 (
     id      INTEGER      NOT NULL PRIMARY KEY AUTO_INCREMENT,
